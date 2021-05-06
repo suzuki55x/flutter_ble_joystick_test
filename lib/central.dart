@@ -22,18 +22,15 @@ class Central extends StatelessWidget {
             children: [
               _background(),
               CustomPaint(
-                child: Container(),
-                painter: MyPainter(this.parseOffset(model.receiveString))
+                  child: Container(),
+                  painter: MyPainter(this.makeOffsetList(model.offset))
               ),
               SafeArea(child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Central Model'
-                  ),
-                  Text(
                     '${model.receiveString}',
-                    style: TextStyle(fontSize: 40),
+                    style: TextStyle(fontSize: 30),
                   ),
                   const SizedBox(height: 30, width: double.infinity,),
                   RaisedButton(
@@ -49,20 +46,8 @@ class Central extends StatelessWidget {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RaisedButton(
-                        onPressed: () {
-                          model.writeString('send message test');
-                        },
-                        child: const Text('test', style: TextStyle(fontSize: 20)),
-                      )
-                    ],
-                  )
                 ],
-              ))
+              )),
             ],
           );
         }),
@@ -78,15 +63,12 @@ class Central extends StatelessWidget {
     });
   }
 
-  List<Offset> parseOffset(String receiveString) {
+  List<Offset> makeOffsetList(Offset offset) {
     try {
-      Map<String, dynamic> val = json.decode(receiveString);
-      Offset offset = Offset(val["x"].toDouble(), val["y"].toDouble());
       List<Offset> offsetList = [offset];
       return offsetList;
     } catch (e) {
       print(e);
-      print(receiveString);
       return [];
     }
   }

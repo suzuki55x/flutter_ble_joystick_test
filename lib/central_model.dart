@@ -12,6 +12,8 @@ class CentralModel extends ChangeNotifier {
   BluetoothCharacteristic? _writeCharacteristic;
   BluetoothCharacteristic? _notifyCharacteristic;
   String receiveString = 'none';
+  Offset offset = new Offset(127.0, 127.0);
+  bool isClicked = false;
   List<int> receiveRow = [];
 
   void scanDevices() {
@@ -49,6 +51,7 @@ class CentralModel extends ChangeNotifier {
           _notifyCharacteristic!.value.listen((value) {
             receiveRow = value;
             receiveString = utf8.decode(value);
+            this.getOffset(receiveString);
             print('received:$receiveString');
             notifyListeners();
           });
@@ -83,5 +86,17 @@ class CentralModel extends ChangeNotifier {
       return false;
     }
     return true;
+  }
+
+  void getOffset(String receiveString) {
+    try {
+      Map<String, dynamic> val = json.decode(receiveString);
+      Offset offset = Offset(val["x"].toDouble(), val["y"].toDouble());
+      this.offset = offset;
+      this.isClicked = val["button"]==1;
+    } catch (e) {
+      print(e);
+      //print(receiveString);
+    }
   }
 }
