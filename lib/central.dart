@@ -23,7 +23,7 @@ class Central extends StatelessWidget {
               _background(),
               CustomPaint(
                   child: Container(),
-                  painter: MyPainter(this.makeOffsetList(model.offset))
+                  painter: MyPainter(this.makeOffsetList(model.offset), model.isClicked)
               ),
               SafeArea(child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -76,14 +76,18 @@ class Central extends StatelessWidget {
 
 class MyPainter extends CustomPainter{
   final List<Offset> _points;
+  final isClicked;
   final _dotPaint = Paint()..color = Colors.black;
 
-  MyPainter(this._points);
+  MyPainter(this._points, this.isClicked);
 
   @override
   void paint(Canvas canvas, Size size) {
     _points.forEach((offset) {
       Offset offsetByCenter = new Offset(size.width/2 - (offset.dx - 127), size.height/2 + (offset.dy - 127));
+      if (this.isClicked) {
+        _dotPaint.color = Colors.red;
+      }
       canvas.drawCircle(offsetByCenter, 10.0, _dotPaint);
     });
   }
