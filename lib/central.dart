@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_ble_joystick_test/central_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,10 @@ class Central extends StatelessWidget {
           return Stack (
             children: [
               _background(),
+              CustomPaint(
+                child: Container(),
+                painter: MyPainter(this.parseOffset(model.receiveString))
+              ),
               SafeArea(child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -70,5 +76,38 @@ class Central extends StatelessWidget {
         color: Colors.white,
       );
     });
+  }
+
+  List<Offset> parseOffset(String receiveString) {
+    try {
+      Map<String, dynamic> val = json.decode(receiveString);
+      Offset offset = Offset(val["x"].toDouble(), val["y"].toDouble());
+      List<Offset> offsetList = [offset];
+      return offsetList;
+    } catch (e) {
+      print(e);
+      print(receiveString);
+      return [];
+    }
+  }
+}
+
+class MyPainter extends CustomPainter{
+  final List<Offset> _points;
+  final _dotPaint = Paint()..color = Colors.black;
+
+  MyPainter(this._points);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _points.forEach((offset) {
+      Offset offsetByCenter = new Offset(size.width/2 - (offset.dx - 127), size.height/2 + (offset.dy - 127));
+      canvas.drawCircle(offsetByCenter, 10.0, _dotPaint);
+    });
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
